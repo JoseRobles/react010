@@ -26,9 +26,33 @@ class Action extends Component {
 }
 
 class Options extends Component {
+  
+  constructor(props)
+  {
+    super(props);
+    this.handleToggleVisibility = this.handleToggleVisibility.bind(this);
+    this.state = {
+      count:0,
+      visibilityTogle: false
+    };
+  }
+
+  handleToggleVisibility()
+  {
+    this.setState(() => {
+      return {
+        visibilityTogle: !this.state.visibilityTogle
+      }
+    });
+  }
+  
   render(){
     return (
     <div>
+      <h1>Count: {this.state.count} </h1>
+      <button onClick={this.handleToggleVisibility}>Show details</button>
+      {this.state.visibilityTogle?'':<h1>This is a test message</h1>}
+      <button onClick={this.props.handleRemoveAll}>Remove all</button>
       {this.props.options.map((option) => <Option key={option} optionName={option}></Option>)}
     </div>);
   }
@@ -62,14 +86,32 @@ class Footer extends Component {
 }
 
 class App extends Component {
+
+  constructor (props)
+  {
+    super(props);
+    this.handleRemoveAll = this.handleRemoveAll.bind(this);
+    this.state = {
+      options: ['First', 'Second', 'Third', 'Fourth']
+    }
+  }
+
+  handleRemoveAll()
+  {
+    this.setState(()=>{
+      return {
+        options: []
+      };
+    });
+  }
+
   render() {
-    const options = ['First', 'Second', 'Third'];
     return (
       <div>
         <Header title="Testing"/>
         <TitleComponent questiontitle="Question title"/>
         <Action/>
-        <Options options={options}/>
+        <Options options={this.state.options} handleRemoveAll={this.handleRemoveAll}/>
         <AddOption/>
         <Footer/>
       </div>
