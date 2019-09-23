@@ -43,7 +43,10 @@ class AddOption extends Component {
   showInformation (e) {
     e.preventDefault();
     const option = e.target.elements.option.value;
-    alert(option);
+    if (option)
+    {
+      alert(option);
+    }
   }
 
   render() {
