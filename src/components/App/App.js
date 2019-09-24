@@ -20,7 +20,7 @@ class Action extends Component {
   render(){
     return(
       <div className="App-question">
-          <button>What should I do?</button>
+          <button onClick={this.props.handlePick}>What should I do?</button>
       </div>);
   }
 }
@@ -64,17 +64,35 @@ class Option extends Component {
 }
 
 class AddOption extends Component {
-  showInformation (e) {
+
+  constructor(props)
+  {
+    super(props);
+    this.handleAddOption = this.handleAddOption.bind(this);
+    this.state = {
+      error: undefined
+    };
+  }
+
+  handleAddOption(e)
+  {
     e.preventDefault();
-    const option = e.target.elements.option.value;
-    if (option)
-    {
-      alert(option);
-    }
+    const option = e.target.elements.option.value.trim();
+    const error = this.props.handleAddOption(option);
+    this.setState(()=> {
+      return {
+        error
+      }
+    })
   }
 
   render() {
-    return(<div><form onSubmit={this.showInformation}><input type="text" name="option"></input><button>Add Option</button></form></div>);
+    return(
+      <div>
+        {this.state.error && <p>{this.state.error}</p>}
+        <form onSubmit={this.handleAddOption}><input type="text" name="option"></input><button>Add Option</button>
+        </form>
+      </div>);
   }
 }
 
@@ -91,9 +109,29 @@ class App extends Component {
   {
     super(props);
     this.handleRemoveAll = this.handleRemoveAll.bind(this);
+    this.handlePick = this.handlePick.bind(this);
+    this.handleAddOption = this.handleAddOption.bind(this);
     this.state = {
-      options: ['First', 'Second', 'Third', 'Fourth']
+      options: []
     }
+  }
+
+  handleAddOption(option)
+  {
+
+    if (!option)
+    {
+      return 'Enter a valid value to add an item';
+    }else if (this.state.options.indexOf(option) > -1)
+    {
+      return 'This option already exists';
+    }
+
+    this.setState((prevState) => {
+      return {
+        options: prevState.options.concat(option)
+      };
+    })
   }
 
   handleRemoveAll()
@@ -105,14 +143,21 @@ class App extends Component {
     });
   }
 
+  handlePick()
+  {
+    const randomNum = Math.floor(Math.random()*this.state.options.length);
+    const option = this.state.options[randomNum];
+    alert(option);
+  }
+
   render() {
     return (
       <div>
         <Header title="Testing"/>
         <TitleComponent questiontitle="Question title"/>
-        <Action/>
+        <Action hasOptions={this.state.options.length > 0} handlePick={this.handlePick}/>
         <Options options={this.state.options} handleRemoveAll={this.handleRemoveAll}/>
-        <AddOption/>
+        <AddOption handleAddOption={this.handleAddOption}/>
         <Footer/>
       </div>
       
